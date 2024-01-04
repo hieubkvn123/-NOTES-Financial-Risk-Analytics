@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{enumitem}
+
+% Settings 
+\input{sections/settings/variables}
+\input{sections/settings/commands}
+
+% Title 
+\input{sections/main/title}
+
+\begin{document}
+%% ========================================================================= %%
+
+%% Title page %%
+\maketitle
+
+%% Table of contents %%
+\tableofcontents
+
+%% Main sections %%
+\newpage
+% Sample + manual
+\input{sections/sample/sample}
+\input{sections/manual/manual}
+
+% Main chapters
+\input{sections/main/chap1_rw_and_bm}
+\input{sections/main/chap2_superhedging_risk}
+\input{sections/main/chap3_value_at_risk}
+\input{sections/main/chap4_expected_shortfall}
+\input{sections/main/chap5_time_series}
+\input{sections/main/chap6_credit_scoring}
+\input{sections/main/chap7_insurance_risk}
+
+%% Appendices %%
+\input{sections/main/footnotes}
+
+%% ========================================================================= %%
+\end{document}

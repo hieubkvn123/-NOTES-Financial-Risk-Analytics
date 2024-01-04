@@ -1,0 +1,125 @@
+\newpage 
+\section{Superhedging risk measures}
+\subsection{Call and Put options}
+\begin{definition}[Put option]
+    The \textbf{Put option} provides trader with the right but not the obligation to \textbf{sell} an asset at a strike price $K$ in future time $T$. The payoff of a put option is defined as:
+    \begin{align*}
+        C = (K - S_T)^+ = \begin{cases}
+            K - S_T, & \text{when } K \ge S_T 
+            \\ \\
+            0, & \text{Otherwise}
+        \end{cases} 
+    \end{align*}
+
+    \noindent \textit{(The payoff is realized when in the future, the asset price falls below the strike price)}.
+\end{definition}
+
+
+\begin{definition}[Call option]
+    The \textbf{Call option} provides trader with the right but not the obligation to \textbf{buy} an asset at a strike price $K$ in future time $T$. The payoff of a call option is defined as:
+    \begin{align*}
+        C = (S_T - K)^+ = \begin{cases}
+            S_T - K, &\text{when } S_T \ge K 
+            \\ \\
+            0, &\text{Otherwise}
+        \end{cases}
+    \end{align*}
+
+    \textit{(The payoff is realized when the future price rises above the strike price)}.
+\end{definition}
+
+\subsection{Hedging and Pricing options}
+\begin{definition}[Cash settlement \& Physical delivery]
+    Take put option issuer as the example, there are two modes of issue (deliveries):
+    \begin{itemize}
+        \item \textbf{Physical delivery} : The option issuer pays the strike price of $K$ to the option holder in exchange for one unit of asset. This usually applies for physical assets like live cattle, fuel, etc.
+        \item \textbf{Cash settlement} : The option issuer fulfills the contract by transferring the amount of $(K-S_T)^+$ to the option holder.
+    \end{itemize}
+\end{definition}
+
+\begin{definition}[Hedging and Pricing options]
+    Two issues of options:
+    \begin{itemize}
+        \item \textbf{Option pricing} : To be fair, option holder have to pay an appropriate price upon signing the contract.
+        \item \textbf{Option hedging} : Manage a given portfolio such that it contains the required payoff: $(K-S_T)^+$ for put option and $(S_T-K)^+$ for call option.
+    \end{itemize}
+\end{definition}
+
+\textbf{Example} : Consider the following example, a risky asset priced at time $t=0$ at $S_0=4$ and taking only two possible values at time $t=1$: $S_1= \{5, 2\}$.
+
+\noindent \newline An option contract promises the payoff:
+\begin{align*}
+    C = \begin{cases}
+        3, \text{if } S_1 = 5
+        \\ \\
+        0, \text{if } S_1 = 2
+    \end{cases}
+\end{align*}
+
+\noindent $\bf (ii)$ \textbf{Option hedging} : how to manage the portfolio $(\alpha, \beta)$ such that $\alpha S_1 + \beta$ matches the payoff at $t=1$.
+
+\begin{align*}
+    C = \begin{cases}
+        3 = 5\alpha + \beta \\ 
+        0 = 2\alpha + \beta
+    \end{cases} \implies 
+    \begin{cases}
+        \alpha = 1 \ \text{(Buy stock)} \\ 
+        \beta = -2 \ \text{(Borrow from bank)}
+    \end{cases}
+\end{align*}
+
+\noindent $\bf (i)$ \textbf{Option hedging} : how to charge the option buyer.
+\begin{align*}
+    V_0 &= \alpha S_0 + \beta \\
+        &= 1 \times 4 - 2 = 2 
+\end{align*}
+
+\begin{definition}[Arbitrage-free price]
+    The \textbf{arbitrage-free price} of an option contract should be the initial cost of creating the portfolio:
+    \begin{align*}
+        V_0 = \alpha S_0 + \beta
+    \end{align*}
+\end{definition}
+
+\subsection{Risk-neutral probability \& Market implied probability}
+\begin{definition}[Risk-neutral probability]
+    With the absence of arbitrage opportunities, the expected payoff ($\mathbb{E}[C]$) should equal the amount of the initial amount $V_0$ invested in the portfolio:
+    \begin{align*}
+        \mathbb{E}[C] = V_0
+    \end{align*}
+
+    \noindent\textbf{Risk-neutral probability} is the probabilities infered from the above equation.
+\end{definition}
+
+\begin{definition}[Market-implied probability]
+    If we match the theoretical price $\mathbb{E}[C]$ with some market price $M$, we derive the \textbf{Market-implied probability}.
+    \begin{align*}
+        \mathbb{E}[C] = M
+    \end{align*}
+\end{definition}
+
+\textbf{Example} : Following the example from the previous section, we have:
+\begin{align*}
+    \mathbb{E}[C] &= 3 \times P(S_1 = 5) + 0 \times P(S_1 = 2) \\
+        &= 3 \times P(S_1 = 5)
+\end{align*}
+
+\noindent Equating the above expected payoff to the initial value invested in the option, we have:
+\begin{align*}
+    \mathbb{E}[C] = V_0 \implies 3\times P(S_1 = 5) = 2 \implies 
+    \begin{cases}
+        P(S_1 = 5) &= \frac{2}{3} 
+        \\ \\
+        P(S_1 = 2) &= \frac{1}{3}
+    \end{cases}
+\end{align*}
+
+\noindent On the other hand, the market-implied probability is:
+\begin{align*}
+    \begin{cases}
+        P(S_1 = 5) &= \frac{M}{3} 
+        \\ \\
+        P(S_1 = 2) &= \frac{3 - M}{3}
+    \end{cases}
+\end{align*}

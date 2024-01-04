@@ -1,0 +1,258 @@
+\newpage
+\section{Time-series for financial data}
+\subsection{Autoregressive Moving Average}
+\subsubsection{$MA$ and $AR$ models}
+\begin{definition}[White Noise]
+    A \textbf{White noise sequence} $(Z_n)_{n\in\mathbb{Z}}$ is a sequence of i.i.d centered, unit variance random variables with
+    \begin{align*}
+        \mathbb{E}[Z_n] = 0, \ Cov(Z_n, Z_m) = \1{n=m}
+    \end{align*}
+\end{definition}
+
+\begin{definition}[Moving Average (MA) model]
+    In the $MA(q)$ model of order $q\ge 1$, the current state of the system is expressed as the \textbf{linear (independent) combination}:
+    \begin{align*}
+        \boxed{
+            X_n = Z_n + \sum_{k=1}^q \beta_k Z_{n-k}
+        }
+    \end{align*}
+    \noindent of $q$ previous states $Z_{n-1}, Z_{n-2}, \dots, Z_{n-q}$. $\beta_1, \dots, \beta_q$ is a sequence of deterministic coefficients. Define the lag operator $L$ as followed:
+    \begin{align*}
+        LZ_n = Z_{n-1}, \ L^kZ_n = Z_{n-k}
+    \end{align*}
+    \noindent We can then rewrite the $MA(q)$ model as:
+    \begin{align*}
+        \boxed{
+            X_n = Z_n + \sum_{k=1}^q\beta_kL^kZ_n = Z_n + \Psi(L)Z_n
+        }   
+    \end{align*}
+    \noindent Where $\Psi(L) = \sum_{k=1}^q \beta_kL^k$ is called the \textbf{moving average operator}.
+\end{definition}
+
+\begin{definition}[Autoregressive (AR) model]
+    In the $AR(p)$ model of order $p\ge 1$, the current state of the system is expressed as the \textbf{Linear (feedback) combination}:
+    \begin{align*}
+        \boxed{
+            X_n = Z_n + \sum_{k=1}^p \alpha_k X_{n-k}
+        }
+    \end{align*}
+
+    \noindent Again, we can rewrite the $AR(p)$ model as:
+    \begin{align*}
+        \boxed{
+            X_n = Z_n + \sum_{k=1}^p \alpha_kL^kX_n = Z_n + \phi(L)X_n
+        }
+    \end{align*}
+    \noindent Where the operator $\phi(L) = \sum_{k=1}^p \alpha_kL^k$.
+\end{definition}
+
+\begin{proposition}{Recursive solution of $AR(1)$}{recursive_solns_of_ar1}
+    The $AR(1)$ process:
+    \begin{align*}
+        X_n = Z_n + \alpha_1 X_{n-1}
+    \end{align*}
+    \noindent can be solved recursively in the following cases:
+    \begin{itemize}
+        \item When $|\alpha_1| < 1\implies$  \textbf{Causal} moving average solution:
+        \begin{align*}
+            X_n = \sum_{k\ge 0}\alpha_1^k Z_{n-k}, \ n\in\mathbb{Z}
+        \end{align*}
+        \item When $|\alpha_1| > 1\implies$ \textbf{Non-causal} moving average solution:
+        \begin{align*}
+            X_n = -\sum_{k\ge 1}\alpha_1^{-k}Z_{n+k}, \ n\in\mathbb{Z}
+        \end{align*}
+    \end{itemize}
+
+    \noindent\newline With the variance of $X_n$ in both cases are:
+    \begin{align*}
+        Var(X_n) = \frac{1}{|1 - \alpha_1^2|}
+    \end{align*}
+    \noindent No such converging solutions exist when $|\alpha_1|=1$.
+\end{proposition}
+
+\begin{proof*}[Proposition \ref{prop:recursive_solns_of_ar1}]
+    Proving each case, we have
+    
+    \begin{subproof}{\newline $(i) \ |\alpha_1| < 1$}
+        Solving using backward induction, we have:
+        \begin{align*}
+            X_n &= Z_n + \alpha_1(Z_{n-1} + \alpha_1X_{n-2}) \\
+                &= Z_n + \alpha_1(Z_{n-1} + \alpha_1(Z_{n-2} \alpha_1{X_{n-3}})) \\
+                &= Z_n + \alpha_1Z_{n-1} + \alpha_1^2Z_{n-2} + \alpha_1^3 X_{n-3} \\
+                &\vdots \\
+                &= \sum_{k\ge 0} \alpha_1^k Z_{n-k}
+        \end{align*}
+
+        \noindent Which converges when the equation $\phi(z)=\alpha_1z=1$ satisfies $|\alpha_1| < 1 \implies |z| > 1$ (Causal).
+        \noindent We also have:
+        \begin{align*}
+            Var(X_n) = \sum_{k\ge0} \alpha_1^{2k}Var(Z_{n-k}) = \sum_{k\ge0}\alpha_1^{2k} = \frac{1}{1-|\alpha_1|^2}
+        \end{align*}
+    \end{subproof}
+
+    \begin{subproof}{\newline $(ii) \ |\alpha_1| > 1$}
+        We can write:
+        \begin{align*}
+            X_{n+1} = Z_{n+1} + \alpha_1X_n \implies X_n = -\alpha_1^{-1}Z_{n+1} + \alpha_1^{-1}X_{n+1}
+        \end{align*}
+
+        \noindent Solving using forward induction, we have:
+        \begin{align*}
+            X_n &= -\alpha_1^{-1}Z_{n+1} + \alpha_1^{-1}X_{n+1} \\
+                &= -\alpha_1^{-1}Z_{n+1} + \alpha_1^{-1}(-\alpha_1^{-1}Z_{n+2} + \alpha_1^{-1}X_{n+2}) \\
+                &= -\alpha_1^{-1}Z_{n+1} + \alpha_1^{-1}(-\alpha_1^{-1}Z_{n+2} + \alpha_1^{-1}(-\alpha_1^{-1}Z_{n+3} + \alpha_1^{-1}X_{n+3})) \\
+                &= -\alpha_1^{-1}Z_{n+1} - \alpha_1^{-2}Z_{n+2} -\alpha_1^{-3}Z_{n+3}  -\alpha_1^{-3}X_{n+3} \\
+                &\vdots \\
+                &= -\sum_{k\ge1}\alpha_1^{-k}Z_{n+k}
+        \end{align*}
+
+        \noindent Which converges when the equation $\phi(z)=\alpha_1z=1$ satisfies $|\alpha_1| > 1 \implies |z| < 1$ (Non-Causal).
+        \noindent We also have:
+        \begin{align*}
+            Var(X_n) = \sum_{k\ge0} \alpha_1^{-2k}Var(Z_{n-k}) = \sum_{k\ge0}\alpha_1^{-2k} = \frac{1}{|\alpha_1|^2-1}
+        \end{align*}
+    \end{subproof}
+\end{proof*}
+
+\subsubsection{$ARMA$ model}
+\begin{definition}[Autoregressive Moving Average (ARMA)  model]
+    In the $ARMA(p,q)$ model with orders $p\ge1, q\ge1$, the current state $X_n$ is expressed as the following linear combination:
+    \begin{align*}
+        \boxed{
+            X_n = Z_n + \sum_{k=1}^p \alpha_k X_{n-k} + \sum_{k=1}^q \beta_k Z_{n-k} 
+        }
+    \end{align*}
+    \noindent Making use of the \textbf{moving average operator} $\Psi(L)$ and the $\phi(L)$ operator, we have:
+    \begin{align*}
+        \boxed{
+            X_n =  Z_n + \phi(L)X_n + \Psi(L)Z_n
+        }
+    \end{align*}
+\end{definition}
+
+
+\subsubsection{$ARIMA$ model}
+\begin{definition}[Difference operator]
+    Consider the difference operator $\nabla$ defined as:
+    \begin{align*}
+        \nabla := I - L
+    \end{align*}
+    \noindent Where $I$ is the identity operator, so that:
+    \begin{align*}
+        \nabla X_n = X_n - X_{n-1}, \ n\ge1
+    \end{align*}
+\end{definition}
+
+\begin{proposition}{Iteration of $\nabla$ operator}{iter_of_diff_operator}
+    The difference operator can be iterated as followed:
+    \begin{align*}
+        \nabla^d X_n = \sum_{k=0}^d \begin{pmatrix}
+            d \\ k
+        \end{pmatrix} (-1)^kX_{n-k}, \ \ d \ge k \ge 0
+    \end{align*}
+\end{proposition}
+
+\begin{proof*}[Proposition \ref{prop:iter_of_diff_operator}]
+    Using the Binomial expansion formula, we have:
+    \begin{align*}
+        \nabla^d &= (I - L)^d \\
+        &= \sum_{k=0}^d I^{d-k}(-L)^k \\
+        &= \sum_{k=0}^d (-L)^k = \sum_{k=0}^d (-1)^k L^k \\
+        \implies \nabla^dX_n &= \sum_{k=0}^d (-1)^k L^k X_n = \sum_{k=0}^d (-1)^kX_{n-k}
+    \end{align*}
+\end{proof*}
+
+\begin{proposition}{Recovery of $X_n$ using $\nabla$ operator}{recover_xn_using_diff_operator}
+    For any time-series $(X_n)_{n\ge1}$, we can recover $X_n$ using the difference operator via:
+    \begin{align*}
+        X_n = \sum_{k=0}^d \begin{pmatrix}
+            d \\ k
+        \end{pmatrix} \nabla^k X_{n-d+k}
+    \end{align*}
+\end{proposition}
+
+\begin{proof*}[Proposition \ref{prop:recover_xn_using_diff_operator}]
+    Applying the Binomial expansion, we have:
+    \begin{align*}
+        I &= (L + I - L)^d = (L + \nabla)^d \\
+            &= \sum_{k=0}^d \begin{pmatrix}
+                d \\ k
+            \end{pmatrix} L^{d-k} \nabla^k \\
+            \implies X_n &= \sum_{k=0}^d \begin{pmatrix}
+                d \\ k
+            \end{pmatrix} L^{d-k} \nabla^k X_n = \sum_{k=0}^d \begin{pmatrix}
+                d \\ k
+            \end{pmatrix} \nabla^k X_{n-d+k}
+    \end{align*}
+\end{proof*}
+
+\begin{definition}[Autoregressive Integrated Moving Average (ARIMA) model]
+    In the $ARIMA(p, d, q)$ model, the iterated difference process $(\nabla^dX_n)_{n\ge0}$ is modelled as the $ARMA(p, q)$ time-series:
+    \begin{align*}
+    \boxed{
+        \nabla^d X_n = Z_n + \sum_{k=0}^p \alpha_k \nabla^dX_{n-k} + \sum_{k=0}^q \beta_k Z_{n-k}
+    }
+    \end{align*}
+    \noindent Making use of the \textbf{moving average operator} $\Psi(L)$ and the operator $\phi(L)$, we have:
+    \begin{align*}
+        \boxed{
+            \nabla^d X_n = Z_n + \phi(L)\nabla^dX_n + \Psi(L) Z_n
+        }
+    \end{align*}
+\end{definition}
+
+\subsection{Time-series stationarity}
+\subsubsection{Strict \& Weak stationarity}
+\begin{definition}[Strict stationarity]
+    A time-series $(X_n)_{n\in\mathbb{Z}}$ is \textbf{strictly stationary} if the equality:
+    \begin{align*}
+        (X_n, X_{n-1}, \dots, X_{n-p}) \simeq (X_{n+m}, X_{n+m-1}, \dots, X_{n+m-p})
+    \end{align*}
+    \noindent holds \textbf{in distribution} for all $n \in \mathbb{Z}$ and $m, p \ge 0$.
+\end{definition}
+
+\begin{definition}[Weak stationarity]
+    A time-series $(X_n)_{n\in\mathbb{Z}}$ is \textbf{weakly stationary} if the following holds:
+    \begin{itemize}
+        \item $(i)$ $\mathbb{E}[X_n] = \mathbb{E}[X_0], \ n\ge0$.
+        \item $(ii)$ The auto-covariance:
+        \begin{align*}
+            (n, m) \to Cov(X_n, X_m)
+        \end{align*}
+        \noindent depends only on the absolute difference $|n-m|, \ n, m \ge0$. The covariance is defined as $Cov(X, Y) = \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y]$.
+    \end{itemize}
+\end{definition}
+
+\begin{theorem}{Unit root test}{unit_root_test}
+    Consider the $AR(p)$ time-series $(X_n)_{n\ge0}$ solution of:
+    \begin{align*}
+        X_n = Z_n + \phi(L)X_n = Z_n + \alpha_1X_{n-1} + \dots + \alpha_pX_{n-p}
+    \end{align*}
+    \noindent with the characteristic polynomial:
+    \begin{align*}
+        \phi(z) = \alpha_1z + \dots + \alpha_qz^q, \ z \in \mathbb{C}
+    \end{align*}
+
+    \noindent Then the time-series $(X_n)_{n\ge0}$ is called:
+    \begin{itemize}
+        \item \textbf{Weakly stationary} : if no solution of $\phi(z) = 1$ \textbf{lies on} the complex unit circle.
+        \item \textbf{Causality} : if no solution of $\phi(z) = 1$ \textbf{lies inside} the complex unit circle.
+    \end{itemize}
+
+    \noindent The complex unit circle is defined on the complex plane as:
+    \begin{align*}
+        \{ z \in \mathbb{C} : |z| \le 1 \}
+    \end{align*}
+\end{theorem}
+
+\subsubsection{Stationarity test}
+\begin{definition}[Dickey-Fuller test]
+    The Dickey-Fuller test allows us to test the null hypothesis that "The time-series is \textbf{non-stationary}":
+    \begin{align*}
+        \begin{cases}
+            $H_0:|\alpha_1|=1$ $\text{(Non-stationarity)}$
+            \\ \\
+            $H_1:|\alpha_1|\ne 1$ $\text{(Stationarity)}$ 
+        \end{cases}
+    \end{align*}
+\end{definition}

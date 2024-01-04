@@ -1,0 +1,196 @@
+\newpage
+\section{Credit Scoring}
+
+\subsection{Discriminant Analysis}
+\textbf{Overview} : The problem of credit scoring arises when we have a pool of credit applicants $(\Omega)$ and among the applicants, there are good $(G)$ and bad $(B)$ applicants such that:
+\begin{align*}
+    \Omega = G \cup B &; \ G \cap B = \emptyset \\
+    P(G) &+ P(B) = 1
+\end{align*}
+
+\begin{definition}[$TPR$ and $FPR$]
+    Given a random variable $X$ representing the \textbf{credit score}. We have:
+    \begin{itemize}
+        \item \textbf{True Positive Rate (TPR)} is the tail distribution function:
+        \begin{align*}
+            \bar F_G(x) = P(X > x|G) = \int_x^\infty f_X(y|G)dy
+        \end{align*}
+
+        \item \textbf{False Positive Rate (FPR)} is the tail distribution function:
+        \begin{align*}
+            \bar F_B(x) = P(X > x|B) = \int_x^\infty f_X(y|B)dy
+        \end{align*}
+    \end{itemize}
+
+    \noindent Intuitively, TPR represents the rate of accepting good applicants whereas FPR represents the rate of accepting bad applicant.
+\end{definition}
+
+\begin{definition}[Acceptance \& Default curve]
+    Given a random variable $X$ representing the credit score. We have:
+    \begin{itemize}
+        \item \textbf{Probability default curve} is given by:
+        \begin{align*}
+            P(B|X=x) = \frac{f_X(x|B)P(B)}{f_X(x)} = \frac{f_X(x|B)P(B)}{f_X(x|B)P(B) + f_X(x|G)P(G)}
+        \end{align*}
+
+        \item \textbf{Probability acceptance curve} is given by:
+        \begin{align*}
+            P(G|X=x) = \frac{f_X(x|G)P(G)}{f_X(x)} = \frac{f_X(x|G)P(G)}{f_X(x|G)P(G) + f_X(x|B)P(B)}
+        \end{align*}
+
+        \noindent The \textbf{default curve} is the probability that an applicant is bad given his credit score whereas the \textbf{acceptance curve} is the probability that an applicant is good given his credit score.
+    \end{itemize}
+\end{definition}
+
+\subsection{Decision Rule}
+\begin{theorem}{Optimal acceptance set}{optimal_acceptance_set}
+    Given $X$ as the random variable representing credit scores of applicants and 
+    \begin{itemize}
+        \item $L_G(X)$ is the loss for rejecting potential good applicants.
+        \item $L_B(X)$ is the loss of accepting bad applications.
+    \end{itemize}
+
+    \noindent We need a decision rule, represented by an \textbf{acceptance set} $\mathcal{A}$, such that the overall loss, given by:
+    \begin{align*}
+        \mathbb{E}\Big[ L_G(X)\1{(X \in \mathcal{A}^c)\cap G} + L_B(X)\1{(X\in\mathcal{A})\cap B} \Big]
+    \end{align*}
+
+    \noindent is minimized. The \textbf{optimal acceptance set} is then given by:
+    \begin{align*}
+        \boxed{
+            \mathcal{A}^* = \Bigg\{ 
+                x \in \mathbb{R} : \lambda(x) \ge \frac{P(B)}{P(G)}\cdot \frac{L_B(x)}{L_G(x)} 
+            \Bigg\}
+        }
+    \end{align*}
+
+    \noindent Where $\lambda(x)$ is the \textbf{likelihood ratio} : 
+    \begin{align*}
+        \lambda(x) = \frac{f_X(x|G)}{f_X(x|B)} = \frac{P(G|X=x)}{P(B|X=x)}\cdot\frac{P(B)}{P(G)}
+    \end{align*}
+\end{theorem}
+
+\begin{proof*}[Theorem \ref{thm:optimal_acceptance_set}]
+    Let $h:\mathbb{R}\to \{G, B\}$ be a classifier associated to the acceptance set $\mathcal{A}$ such that:
+    \begin{align*}
+        h(X) = \begin{cases}
+            G, & \text{if } X \in \mathcal{A} 
+            \\ \\
+            B, & \text{if } X \in \mathcal{A}^c
+        \end{cases}
+    \end{align*}
+
+    \noindent Hence, we can rewrite the loss function as followed:
+    \begin{align*}
+        \mathbb{E}_{x\sim X}&\Bigg[ 
+            L_G(x)\1{h(x) = B, G} + L_B(x)\1{h(x)=G, B}
+        \Bigg]
+        \\
+        &= \mathbb{E}_{x\sim X}\Bigg[ 
+            L_G(x)\1{h(x) = B}P(G|h(x)=B) + L_B(x)\1{h(x)=G}P(B|h(x)=G)
+        \Bigg]
+    \end{align*}
+
+    \noindent Now, we have:
+    \begin{align*}
+        \1{h(x)=B}P(G|h(x)=B) = \1{h(x)=B}P(G|X=x)
+    \end{align*}
+    \noindent Because the case where $h(x)=G$ is already erased by the indicator function. Similarly, we have:
+    \begin{align*}
+        \1{h(x)=G}P(B|h(x)=G) = \1{h(x)=G}P(B|X=x)
+    \end{align*}
+
+    \noindent Define the following function:
+    \begin{align*}
+        \eta(x) = P(G|X=x) \implies 1 - \eta(x) = P(B|X=x)
+    \end{align*}
+
+    \noindent We have:
+    \begin{align*}
+        \mathbb{E}_{x\sim X}&\Bigg[ 
+            L_G(x)\1{h(x) = B, G} + L_B(x)\1{h(x)=G, B}
+        \Bigg] \\
+        &= \mathbb{E}_{x\sim X}\Bigg[ 
+            \eta(x)L_G(x)\1{h(x)=B} + (1 - \eta(x))L_B(x)\1{h(x)=G}
+        \Bigg]
+    \end{align*}
+
+    \noindent To minimize the above cost, we have to minimize the integrand inside the expectation. Notice that $\1{h(x)=B}$ and $\1{h(x)=G}$ are mutually exclusive. Hence, we have the optimal classifier $h^*:\mathbb{R} \to \{G, B\}$ such that:
+    \begin{align*}
+        h^*(x) = \begin{cases}
+            G, &\text{if } (1 - \eta(x))L_B(x) \le \eta(x) L_G(x)
+            \\ \\
+            B, &\text{Otherwise}
+        \end{cases}
+    \end{align*}
+
+    \noindent Therefore, we have the following optimal acceptance set:
+    \begin{align*}
+        \mathcal{A}^* &= \Bigg\{
+            x \in \mathbb{R} : (1 - \eta(x)L_B(x) \le \eta(x) L_G(x)
+        \Bigg\} \\
+        &= \Bigg\{
+            x \in \mathbb{R} : \frac{\eta(x)}{1-\eta(x)} \ge \frac{L_B(x)}{L_G(x)}
+        \Bigg\} \\
+        &= \Bigg\{
+            x \in \mathbb{R} : \frac{P(G|X=x)}{P(B|X=x)} \ge \frac{L_B(x)}{L_G(x)}
+        \Bigg\} \\ 
+        &= \Bigg\{
+            x \in \mathbb{R} : \lambda(x) \ge \frac{P(B)}{P(G)}\cdot \frac{L_B(x)}{L_G(x)}
+        \Bigg\} \\ 
+    \end{align*}
+\end{proof*}
+
+\begin{proposition}{Optimal acceptance set for Gaussian scores}{opt_accpt_for_gaussian}
+    Let $X|G\sim \mathcal{N}(\mu_G, \sigma^2)$ and $X|B \sim \mathcal{N}(\mu_B, \sigma^2)$. Intuitively, the scores of good and bad applicants are normally distributed with different means but same variance. The optimal acceptance set is given by:
+    \begin{align*}
+        \mathcal{A}^* = \Bigg[ 
+            \frac{\mu_G + \mu_B}{2} + \frac{1}{\beta}\log\Bigg( 
+                \frac{L_BP(B)}{L_GP(G)}
+            \Bigg), \infty
+        \Bigg)
+    \end{align*}
+    \noindent Where $\beta = \frac{\mu_G - \mu_B}{\sigma^2}>0$. Note that this bound is under the condition that the mean score of good applicants is strictly greater than that of bad applicants:
+    \begin{align*}
+        \mathbb{E}\Big[ X|G \Big] = \mu_G > \mu_B = \mathbb{E}\Big[ X|B \Big]
+    \end{align*}
+\end{proposition}
+
+\subsection{ROC curve}
+\begin{definition}[ROC curve]
+    The \textbf{Receiver Operating Characteristic (ROC)} curve is a function of the threshold $p \in [0,1]$, defined as:
+    \begin{align*}
+        \boxed{
+            ROC(p) = \bar F_G\Big( \bar F_B^{-1}(p) \Big)
+        }
+    \end{align*}
+\end{definition}
+
+\begin{proposition}{ROC curve integral formula}{roc_formula}
+    The ROC curve can be rewritten as an integ  ral:
+    \begin{align*}
+        \boxed{
+            ROC(p) = \bar F_G\Big( \bar F_B^{-1}(p) \Big) = \int_0^p \lambda\Big( \bar F_B^{-1}(q) \Big)dq
+        }
+    \end{align*}
+    \noindent Where the likelihood ratio $\lambda(x)$ is given by:
+    \begin{align*}
+        \lambda(x) = \frac{f_X(x|G)}{f_X(x|B)}
+    \end{align*}
+\end{proposition}
+
+\begin{proof*}[Proposition \ref{prop:roc_formula}]
+    We have:
+    \begin{align*}
+        \frac{d}{dq}\bar F_G\Big( \bar F_B^{-1}(p) \Big) 
+            &= \frac{
+                \bar F'_G\Big( \bar F_B^{-1}(p) \Big)
+            }{
+                \bar F'_B\Big( \bar F_B^{-1}(p) \Big)
+            }
+            \\
+            &= \frac{f_X(F_B^{-1}(p)|G)}{f_X(F_B^{-1}(p)|B)} \\
+            &= \lambda\Big(F_B^{-1}(p)\Big) \\
+        \implies ROC(p) &= \int_0^p\lambda\Big(F_B^{-1}(q)\Big)dq
+    \end{align*}
+\end{proof*}
