@@ -1,7 +1,7 @@
 \newpage
 \section{Time-series for financial data}
 \subsection{Autoregressive Moving Average}
-\subsubsection{$MA$ and $AR$ models}
+\subsubsection{\textbf{MA} and \textbf{AR} models}
 \begin{definition}[White Noise]
     A \textbf{White noise sequence} $(Z_n)_{n\in\mathbb{Z}}$ is a sequence of i.i.d centered, unit variance random variables with
     \begin{align*}
@@ -114,7 +114,7 @@
     \end{subproof}
 \end{proof*}
 
-\subsubsection{$ARMA$ model}
+\subsubsection{\textbf{ARMA} model}
 \begin{definition}[Autoregressive Moving Average (ARMA)  model]
     In the $ARMA(p,q)$ model with orders $p\ge1, q\ge1$, the current state $X_n$ is expressed as the following linear combination:
     \begin{align*}
@@ -131,7 +131,7 @@
 \end{definition}
 
 
-\subsubsection{$ARIMA$ model}
+\subsubsection{\textbf{ARIMA} model}
 \begin{definition}[Difference operator]
     Consider the difference operator $\nabla$ defined as:
     \begin{align*}
@@ -250,9 +250,9 @@
     The Dickey-Fuller test allows us to test the null hypothesis that "The time-series is \textbf{non-stationary}":
     \begin{align*}
         \begin{cases}
-            $H_0:|\alpha_1|=1$ $\text{(Non-stationarity)}$
+            H_0:|\alpha_1|=1 &\text{(Non-stationarity)}
             \\ \\
-            $H_1:|\alpha_1|\ne 1$ $\text{(Stationarity)}$ 
+            H_1:|\alpha_1|\ne 1 &\text{(Stationarity)}
         \end{cases}
     \end{align*}
 \end{definition}
