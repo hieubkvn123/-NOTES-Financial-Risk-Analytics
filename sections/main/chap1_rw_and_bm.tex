@@ -49,6 +49,38 @@
     \end{align*}
 \end{proposition}
 
+\begin{proof*}[Proposition \ref{prop:geom_brownian_motion}]
+    The asset prices $(S_t)_{t\ge0}$ satisfies:
+    \begin{align}
+        \frac{dS_t}{S_t} = \frac{S_{t+dt} - S_t}{S_t} = \mu dt + \sigma dB_t
+    \end{align}
+
+    \noindent Taking the differential of the logarithm of asset price, we have:
+    \begin{align*}
+        d\log S_t &\approx \log S_{t+dt} - \log S_t \\
+            &= \log\frac{S_{t+dt}}{S_t} \\
+            &= \log \biggRound{
+                1 + \frac{dS_t}{S_t}
+            } \\
+            &= \log \bigRound{ 1 + \mu dt + \sigma dB_t } \\
+            &\approx \mu dt + \sigma dB_t - \frac{(\mu dt + \sigma dB_t)^2}{2} \ \ \ \biggRound{\log(x+1) \to x - \frac{x^2}{2} \text{ as } x \to 0} \\
+            &\approx \mu dt + \sigma dB_t - \frac{\mu^2}{2}(dt)^2 - \mu\sigma dtdB_t - \frac{\sigma^2}{2}(dB_t)^2 \\
+            &= \mu dt + \sigma dB_t - \frac{\sigma^2}{2}dt \\
+        \implies
+        \log S_t &= \log S_0 + \sigma dB_t + \biggRound{
+            \mu - \frac{\sigma^2}{2}
+        }t
+    \end{align*}
+
+    \noindent From the above, we derive the solution to the SDE $dS_t = \mu S_tdt + \sigma S_t dB_t$:
+    \begin{align}
+        S_t = S_0 \exp\biggRound{
+            \sigma B_t + \biggRound{\mu - \frac{\sigma^2}{2}}t
+        }, \ \ \ t \ge 0
+    \end{align}
+\end{proof*}
+
+
 \begin{proposition}{Distribution of Geometric BM}{dist_of_gbm}
     At any time $T > 0$, the random variable 
     \begin{align*}
@@ -57,12 +89,63 @@
     \noindent has the \textbf{log-normal distribution} with the density function:
     \begin{align*}
         \boxed{
-            f_{S_T}(x) \frac{1}{\sigma x \sqrt{2\pi T}}\exp\Bigg( 
+            f_{S_T}(x) = \frac{1}{\sigma x \sqrt{2\pi T}}\exp\Bigg( 
                 -\frac{1}{2\sigma^2 T} \Bigg(\log x - \log S_0 - \Bigg( \mu - \frac{\sigma^2}{2} \Bigg)T \Bigg)^2
             \Bigg)
         }
     \end{align*}
 \end{proposition}
+
+\begin{proof*}[Proposition \ref{prop:dist_of_gbm}]
+    For any $x\in\R$, we have:
+    \begin{align*}
+        P(S_t \le x) &= P\biggRound{
+            S_0 \exp\biggRound{
+                \sigma B_t + \biggRound{\mu - \frac{\sigma^2}{2}}t
+            } \le x
+        } \\
+        &= P\biggRound{
+            \log S_0 + \sigma B_t + \biggRound{ \mu - \frac{\sigma^2}{2} }t  \le \log x
+        } = P\biggRound{
+            \sigma B_t + \biggRound{ \mu - \frac{\sigma^2}{2} }t \le \log \frac{x}{S_0}
+        }\\
+        &= P\biggRound{
+            B_t \le \frac{1}{\sigma} \biggSquare{
+                \log\frac{x}{S_0} - \biggRound{ \mu - \frac{\sigma^2}{2} }t
+            }
+        }
+    \end{align*}
+
+    \noindent We have:
+    \begin{align*}
+        B_t \sim \mathcal{N}(0,t) \implies B_t = Z\sqrt{t}, \ \ \ (Z\sim \mathcal{N}(0,1))
+    \end{align*}
+
+    \noindent Hence, we have:
+    \begin{align*}
+        P(S_t \le x) 
+            &= P\biggRound{
+                    Z \le \frac{1}{\sigma\sqrt{t}} \biggSquare{
+                    \log\frac{x}{S_0} - \biggRound{ \mu - \frac{\sigma^2}{2} }t
+                }
+            } \\
+            &= \Phi \biggRound{
+                \frac{1}{\sigma\sqrt{t}} \biggSquare{
+                    \log\frac{x}{S_0} - \biggRound{ \mu - \frac{\sigma^2}{2} }t
+                }
+            } = \Phi \biggRound{
+                \frac{1}{\sigma\sqrt{t}} \biggSquare{
+                    \log x - \log S_0 - \biggRound{ \mu - \frac{\sigma^2}{2} }t
+                }
+            }
+    \end{align*}
+
+    \noindent The above CDF is of a random variable from the distribution $Lognormal({\bf M, S})$ where:
+    \begin{align*}
+        {\bf M} &= \log S_0 + \biggRound{ \mu - \frac{\sigma^2}{2} }t \\
+        {\bf S} &= t\sigma^2
+    \end{align*}
+\end{proof*}
 
 \subsection{Distribution of market return}
 \textbf{Overview} : Even though we can model the market returns using Brownian Motion and Geometric Brownian Motion, the assumption of Gaussian market returns is often not true. We can use the following visualizations/tests to verify that assumption:
